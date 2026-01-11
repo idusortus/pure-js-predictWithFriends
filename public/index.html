@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PredictWithFriends - Prediction Markets</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Auth Screen -->
+  <div id="authScreen" class="screen">
+    <div class="container">
+      <div class="auth-box">
+        <h1>🎲 PredictWithFriends</h1>
+        <p class="subtitle">Invite-only prediction markets for your crew</p>
+        
+        <div id="authTabs">
+          <button id="loginTab" class="tab-button active">Login</button>
+          <button id="registerTab" class="tab-button">Register</button>
+        </div>
+        
+        <!-- Login Form -->
+        <div id="loginForm" class="auth-form">
+          <input type="text" id="loginUsername" placeholder="Username" />
+          <button id="loginButton" class="btn-primary">Login</button>
+        </div>
+        
+        <!-- Register Form -->
+        <div id="registerForm" class="auth-form" style="display: none;">
+          <input type="text" id="registerUsername" placeholder="Username" />
+          <input type="text" id="registerInviteCode" placeholder="Invite Code" />
+          <button id="registerButton" class="btn-primary">Register</button>
+        </div>
+        
+        <div id="authError" class="error-message"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App Screen -->
+  <div id="appScreen" class="screen" style="display: none;">
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <div class="header-content">
+          <div class="header-left">
+            <h1>🎲 PredictWithFriends</h1>
+          </div>
+          <div class="header-right">
+            <span id="userInfo">
+              <span id="usernameDisplay"></span> | 
+              Balance: <span id="balanceDisplay">0</span> tokens
+            </span>
+            <button id="logoutButton" class="btn-secondary">Logout</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container main-content">
+      <div class="grid">
+        <!-- Markets Section -->
+        <div class="markets-section">
+          <div class="section-header">
+            <h2>Markets</h2>
+            <button id="createMarketButton" class="btn-primary">Create Market</button>
+          </div>
+          
+          <div id="marketsList" class="markets-list"></div>
+        </div>
+
+        <!-- Chat Section -->
+        <div class="chat-section">
+          <h2>Global Chat</h2>
+          <div id="chatMessages" class="chat-messages"></div>
+          <div class="chat-input-container">
+            <input type="text" id="chatInput" placeholder="Type a message..." />
+            <button id="sendChatButton" class="btn-primary">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Market Modal -->
+  <div id="createMarketModal" class="modal">
+    <div class="modal-content">
+      <h2>Create New Market</h2>
+      <input type="text" id="marketQuestion" placeholder="What do you want to predict?" />
+      <label for="marketCloseDate">Close Date:</label>
+      <input type="datetime-local" id="marketCloseDate" />
+      <div class="modal-actions">
+        <button id="submitMarketButton" class="btn-primary">Create</button>
+        <button id="cancelMarketButton" class="btn-secondary">Cancel</button>
+      </div>
+      <div id="createMarketError" class="error-message"></div>
+    </div>
+  </div>
+
+  <!-- Bet Modal -->
+  <div id="betModal" class="modal">
+    <div class="modal-content">
+      <h2 id="betModalTitle">Place Bet</h2>
+      <p id="betModalQuestion"></p>
+      <div class="bet-options">
+        <button id="betYesButton" class="btn-bet btn-yes">Yes</button>
+        <button id="betNoButton" class="btn-bet btn-no">No</button>
+      </div>
+      <input type="number" id="betAmount" placeholder="Amount (tokens)" min="1" />
+      <div class="modal-actions">
+        <button id="submitBetButton" class="btn-primary">Place Bet</button>
+        <button id="cancelBetButton" class="btn-secondary">Cancel</button>
+      </div>
+      <div id="betError" class="error-message"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

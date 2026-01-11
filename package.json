@@ -1,0 +1,19 @@
+{
+  "name": "pure-js-predict-with-friends",
+  "version": "1.0.0",
+  "description": "Prediction markets platform for friends with invite-only access",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["prediction", "markets", "polymarket", "kalshi"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.17.1"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
