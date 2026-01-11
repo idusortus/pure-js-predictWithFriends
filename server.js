@@ -60,6 +60,23 @@ const server = http.createServer((req, res) => {
 // Create WebSocket server
 const wss = new WebSocketServer({ server });
 
+// Helper function to sanitize and validate input
+function sanitizeInput(input, maxLength = 500) {
+  if (typeof input !== 'string') return '';
+  // Trim and limit length
+  let sanitized = input.trim().slice(0, maxLength);
+  // Remove any control characters
+  sanitized = sanitized.replace(/[\x00-\x1F\x7F]/g, '');
+  return sanitized;
+}
+
+// Helper function to validate username
+function isValidUsername(username) {
+  if (!username || typeof username !== 'string') return false;
+  // Username must be 1-30 characters, alphanumeric, dashes, underscores
+  return /^[a-zA-Z0-9_-]{1,30}$/.test(username);
+}
+
 // Helper function to broadcast to all connected clients
 function broadcast(data, excludeSessionId = null) {
   store.connections.forEach((ws, sessionId) => {
@@ -71,7 +88,7 @@ function broadcast(data, excludeSessionId = null) {
 
 // Helper function to generate session ID
 function generateSessionId() {
-  return Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+  return Math.random().toString(36).slice(2, 11) + Date.now().toString(36);
 }
 
 // WebSocket message handlers
@@ -120,10 +137,16 @@ wss.on('connection', (ws) => {
   });
 
   function handleRegister(ws, data) {
-    const { username, inviteCode } = data;
+    const username = sanitizeInput(data.username, 30);
+    const inviteCode = sanitizeInput(data.inviteCode, 50);
     
     if (!username || !inviteCode) {
       ws.send(JSON.stringify({ type: 'error', message: 'Username and invite code required' }));
+      return;
+    }
+    
+    if (!isValidUsername(username)) {
+      ws.send(JSON.stringify({ type: 'error', message: 'Username must be 1-30 characters and contain only letters, numbers, dashes, and underscores' }));
       return;
     }
     
@@ -168,10 +191,15 @@ wss.on('connection', (ws) => {
   }
 
   function handleLogin(ws, data) {
-    const { username } = data;
+    const username = sanitizeInput(data.username, 30);
     
     if (!username) {
       ws.send(JSON.stringify({ type: 'error', message: 'Username required' }));
+      return;
+    }
+    
+    if (!isValidUsername(username)) {
+      ws.send(JSON.stringify({ type: 'error', message: 'Invalid username format' }));
       return;
     }
     
@@ -212,11 +240,17 @@ wss.on('connection', (ws) => {
   }
 
   function handleCreateMarket(ws, data) {
-    const { sessionId, question, closeDate } = data;
+    const { sessionId, closeDate } = data;
+    const question = sanitizeInput(data.question, 200);
     
     const session = store.sessions.get(sessionId);
     if (!session || session.expiresAt < Date.now()) {
       ws.send(JSON.stringify({ type: 'error', message: 'Invalid session' }));
+      return;
+    }
+    
+    if (!question || question.length < 10) {
+      ws.send(JSON.stringify({ type: 'error', message: 'Question must be at least 10 characters' }));
       return;
     }
     
@@ -344,11 +378,17 @@ wss.on('connection', (ws) => {
   }
 
   function handleSendMessage(ws, data) {
-    const { sessionId, message } = data;
+    const { sessionId } = data;
+    const message = sanitizeInput(data.message, 500);
     
     const session = store.sessions.get(sessionId);
     if (!session || session.expiresAt < Date.now()) {
       ws.send(JSON.stringify({ type: 'error', message: 'Invalid session' }));
+      return;
+    }
+    
+    if (!message || message.length === 0) {
+      ws.send(JSON.stringify({ type: 'error', message: 'Message cannot be empty' }));
       return;
     }
     
